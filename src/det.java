@@ -5,14 +5,12 @@ public class det {
 
     //Berechnung mit 1. Normalform
     public static double calcDet(double[][] A) {
-        //Falls die Matrix nur eindimensional oder zweidimensional ist,
-        //kann man sich die Umformung sparen.
+        //Falls die Matrix nur eindimensional oder zweidimensional ist, kann man sich die Umformung sparen.
         if (A.length == 1) return A[0][0];
         if (A.length == 2) {
             nrOfMult = 2;
             return ((A[0][0] * A[1][1]) - (A[0][1] * A[1][0]));
         }
-
         //Überprüfung, ob man Zeilenumtauschungen vornehmen muss falls A[0][0] = 0 ist
         boolean isValid = A[0][0] != 0;
         if(!isValid) { //wenn 1. Eintrag eine Null, führe Zeilenumformung durch
@@ -37,68 +35,53 @@ public class det {
             det *= A[x][x];
             nrOfMult++;
         }
-        if (!isValid) return det * (-1);
+        if (!isValid) return det * (-1); //wenn Zeilen getauscht wurden --> Vorzeichenänderung!
         return det;
     }
 
-
-
     //Rekursive Berechnung mit Def. L.4.1.1 Skript
-    public static double calcDetRec(double[][] A) { //NOT WORKING YET
-        ArrayList<double[][]> listOfMatrices = new ArrayList<>();
+    public static double calcDetRec(double[][] A) {
+        ArrayList<double[][]> listMatrices = new ArrayList<>();
         double det = 0;
+        //Base cases für 1D und 2D Matrix
         if (A.length == 1) det = A[0][0];
-        /*if (A.length == 2) {
-            nrOfMult = 2;
+        if (A.length == 2) {
+            nrOfMult += 2;
             det = ((A[0][0] * A[1][1]) - (A[0][1] * A[1][0]));
-        }*/
-        if (A.length >= 2) {
-            listOfMatrices = untermatrizen(A);
-           for(int i = 0; i < listOfMatrices.size(); i++) {
-               double[][] matrix = listOfMatrices.get(i);
-               //System.out.println(matrix.length);
-
-               det += Math.pow(-1, (i+1)+1) * matrix[i][0] * calcDetRec(matrix);
+        }
+        if (A.length > 2) {
+            listMatrices = untermatrizen(A); //ruft die Funktion auf, die Zeilenstreichung vornimmt
+           for(int i = 0; i < listMatrices.size(); i++) { //für jede Untermatriz
+               double[][] matrix = listMatrices.get(i); //schau dir die aktuelle Untermatriz an
+               det += Math.pow(-1, (i+1)+1) * A[i][0] * calcDetRec(matrix); //Formel aus Skript zur Berechnung der Det.
+               nrOfMult++;
            }
         }
         return det;
     }
 
+    /*Methode, um durch Zeilenwegstreichung Untermatrizen zu erstellen, die für calcDetRec gebraucht werden
+    **Die Methode stammt von Ruslan.
+    */
     public static ArrayList<double[][]> untermatrizen(double[][] A) {
-        ArrayList<double[][]> listOfMatrices = new ArrayList<>();
-
+        ArrayList<double[][]> listMatrices = new ArrayList<>();
         double[][] B;
-
-        for(int i = 0 ; i < A.length; i++){
-
+        for(int i = 0 ; i < A.length; i++){ //Schleife über alle Zeilen
             int k = 0;
-
-            B = new double[A.length - 1][A.length - 1];
-
+            B = new double[A.length - 1][A.length - 1]; //neues Array erstellen, dass jeweils eine Zeile und Spalte weniger hat
             for( int j = 0 ; j < A.length ; j++){
-                /* Prüft ob die "i"te Zeile der ersten Spalte, der "j"ten Zeile der restlichen Spalten entspricht.
-                Emuliert das Wegstreichen, bzw. weglassen einer Zeile. Falls es nicht der Fall ist, so werden die
-                Einträge der Matrix in die neue Matrix geschrieben.
-                 */
+                //Prüft ob die der erste Spalte der Zeile der Zeile der restlichen Spalten entspricht. Wenn nein, dann wird das Wegstreichen vorgenommen.
                 if(j != i){
                     for(int s = 0; s < B.length ; s++){
                         B[k][s] = A[j][s+1];
                     }
                     k++;
-
                 }
-
             }
-
-
-            listOfMatrices.add(B);
-
+            listMatrices.add(B);
         }
-        System.out.println(listOfMatrices.size());
-        return listOfMatrices;
-        }
-
-
+        return listMatrices;
+    }
 
     //Methode um Matrix in richtige Form zu bringen, sodass A[0][0] nicht 0 ist.
     public static double[][] changeLines(double[][] A) {
