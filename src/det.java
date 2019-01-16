@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class det {
     public static int nrOfMult;
 
@@ -18,15 +20,12 @@ public class det {
         }
         double det = 1;
         int row = 0; // Unsere current Zeile
-
-        for(int i = 0; i < A.length - 1 ; i++) { //Für jede Zeile
-            for(int j = A[i].length - 1 ; j >= row+1; j--) { //Für jeden Eintrag in der Spalte ??
-
-                double fct = A[j][i] / A[row][i];
+        for(int i = 0; i < A.length - 1 ; i++) { //Für jede Zeile, angefangen bei der 1.
+            for(int j = A.length - 1 ; j >= row+1; j--) { //Zeilen von unten angefangen bis vor unserer aktuellen row
+                double fct = A[j][i] / A[row][i]; //teile die  Spalte der unteren Zeile durch die Spalte der oberen Zeile
                 nrOfMult++;
-
-                //Zeilenumformung der j Zeile mit der "row" Zeile RUSLANS COMMENT
-                for (int k = 0; k < A[j].length; k++) {
+                for (int k = 0; k < A[j].length; k++) { //für alle Einträge der Zeile
+                    //Forme die untere Zeile und die aktuelle Spalte um durch Abzug der aktuellen Reihe und gleichen Spalte von oben mal den Faktor
                     A[j][k] -= (A[row][k] * fct);
                     nrOfMult++;
                 }
@@ -46,33 +45,62 @@ public class det {
 
     //Rekursive Berechnung mit Def. L.4.1.1 Skript
     public static double calcDetRec(double[][] A) { //NOT WORKING YET
-        if (A.length == 1) return A[0][0];
-        if (A.length == 2) {
+        ArrayList<double[][]> listOfMatrices = new ArrayList<>();
+        double det = 0;
+        if (A.length == 1) det = A[0][0];
+        /*if (A.length == 2) {
             nrOfMult = 2;
-            return ((A[0][0] * A[1][1]) - (A[0][1] * A[1][0]));
-        }
+            det = ((A[0][0] * A[1][1]) - (A[0][1] * A[1][0]));
+        }*/
+        if (A.length >= 2) {
+            listOfMatrices = untermatrizen(A);
+           for(int i = 0; i < listOfMatrices.size(); i++) {
+               double[][] matrix = listOfMatrices.get(i);
+               //System.out.println(matrix.length);
 
-       double[][] temporary;
-       double det = 0;
-        for (int i = 0; i < A[0].length; i++) {
-            temporary = new double[A.length - 1][A[0].length - 1];
-
-            for (int j = 1; j < A.length; j++) {
-                for (int k = 0; k < A[0].length; k++) {
-                    if (k < i) {
-                        temporary[j - 1][k] = A[j][k];
-                    } else if (k > i) {
-                        temporary[j - 1][k - 1] = A[j][k];
-                    }
-                }
-            }
-           return A[0][i] * Math.pow(-1, (double) i) * calcDet(temporary);
+               det += Math.pow(-1, (i+1)+1) * matrix[i][0] * calcDetRec(matrix);
+           }
         }
-       return det;
+        return det;
     }
 
+    public static ArrayList<double[][]> untermatrizen(double[][] A) {
+        ArrayList<double[][]> listOfMatrices = new ArrayList<>();
+
+        double[][] B;
+
+        for(int i = 0 ; i < A.length; i++){
+
+            int k = 0;
+
+            B = new double[A.length - 1][A.length - 1];
+
+            for( int j = 0 ; j < A.length ; j++){
+                /* Prüft ob die "i"te Zeile der ersten Spalte, der "j"ten Zeile der restlichen Spalten entspricht.
+                Emuliert das Wegstreichen, bzw. weglassen einer Zeile. Falls es nicht der Fall ist, so werden die
+                Einträge der Matrix in die neue Matrix geschrieben.
+                 */
+                if(j != i){
+                    for(int s = 0; s < B.length ; s++){
+                        B[k][s] = A[j][s+1];
+                    }
+                    k++;
+
+                }
+
+            }
 
 
+            listOfMatrices.add(B);
+
+        }
+        System.out.println(listOfMatrices.size());
+        return listOfMatrices;
+        }
+
+
+
+    //Methode um Matrix in richtige Form zu bringen, sodass A[0][0] nicht 0 ist.
     public static double[][] changeLines(double[][] A) {
         double max = 0;
         int line = 0;
@@ -91,5 +119,4 @@ public class det {
         }
         return A;
     }
-
 }
