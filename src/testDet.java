@@ -24,7 +24,7 @@ public class testDet {
         System.out.println();
         
         det.nrOfMult = 0;
-        System.out.println("det(A) = "+det.calcDet(A));
+       System.out.println("det(A) = "+det.calcDet(A));
         System.out.println("Anzahl der Multiplikationen: "+det.nrOfMult);
     }
 
