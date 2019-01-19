@@ -61,7 +61,7 @@ public class det {
     }
 
     /*Methode, um durch Zeilenwegstreichung Untermatrizen zu erstellen, die für calcDetRec gebraucht werden
-    **Die Methode stammt von Ruslan.
+    **Die Methode stammt ursprünglich von Ruslan.
     */
     public static ArrayList<double[][]> untermatrizen(double[][] A) {
         ArrayList<double[][]> listMatrices = new ArrayList<>();
@@ -70,7 +70,7 @@ public class det {
             int k = 0;
             B = new double[A.length - 1][A.length - 1]; //neues Array erstellen, dass jeweils eine Zeile und Spalte weniger hat
             for( int j = 0 ; j < A.length ; j++){
-                //Prüft ob die der erste Spalte der Zeile der Zeile der restlichen Spalten entspricht. Wenn nein, dann wird das Wegstreichen vorgenommen.
+                //Prüft ob die der abgefragte Spalte der abgefragten Zeile der Zeile der restlichen Spalten entspricht. Wenn nein, dann wird das Wegstreichen vorgenommen.
                 if(j != i){
                     for(int s = 0; s < B.length ; s++){
                         B[k][s] = A[j][s+1];
